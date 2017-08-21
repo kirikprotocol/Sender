@@ -2,7 +2,13 @@
 
 <config>
   <section name="sender.plugin">
-    <param name="storage.api.url" type="string">http:///wstorage/v2/profile</param>
+    <param name="profile.storage.api.url" type="string">http:///wstorage/v2/profile</param>
     <param name="push.api.url" type="string">https://api.miniapps.run/push</param>
+
+    <section name="api.client">
+      <param name="api.client.connectTimeout.millis">30000</param>
+      <param name="api.client.requestTimeout.millis">30000</param>
+    </section>
+
   </section>
 </config>

@@ -24,9 +24,7 @@ public class InitListener implements ServletContextListener {
     final File configDir = getConfigDir();
     initLog4j(configDir);
     XmlConfigSection config = loadXmlConfig(configDir);
-    String pushApiUrl = getPushApihUrl(config);
-    String storageApiUrl = getStorageApiUrl(config);
-    initWebContext(config, pushApiUrl, storageApiUrl);
+    initWebContext(config);
   }
 
   @Override
@@ -67,32 +65,14 @@ public class InitListener implements ServletContextListener {
     PropertyConfigurator.configureAndWatch(log4jProps.getAbsolutePath(), TimeUnit.MINUTES.toMillis(1));
   }
 
-  private void initWebContext(XmlConfigSection config, String pushApiUrl, String storageApiUrl) {
+  private void initWebContext(XmlConfigSection config) {
     try {
 
-      WebContext.init(config, pushApiUrl, storageApiUrl);
+      WebContext.init(config);
     }
     catch(Exception e) {
       e.printStackTrace();
       throw new RuntimeException("Can't init WebContext", e);
-    }
-  }
-
-  private String getStorageApiUrl(XmlConfigSection config) {
-    try {
-      return config.getString("storage.api.url");
-    }
-    catch(ConfigException e) {
-      throw new RuntimeException("Parameter storage.api.url is not found.", e);
-    }
-  }
-
-  private String getPushApihUrl(XmlConfigSection config) {
-    try {
-      return config.getString("push.api.url");
-    }
-    catch(ConfigException e) {
-      throw new RuntimeException("Parameter push.api.url is not found.", e);
     }
   }
 
