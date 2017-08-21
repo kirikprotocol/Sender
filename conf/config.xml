@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<config>
+  <section name="sender.plugin">
+    <param name="storage.api.url" type="string">http:///wstorage/v2/profile</param>
+    <param name="push.api.url" type="string">https://api.miniapps.run/push</param>
+  </section>
+</config>

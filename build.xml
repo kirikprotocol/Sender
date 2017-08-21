@@ -1,0 +1,67 @@
+<project name="sads-sender" xmlns:ivy="antlib:org.apache.ivy.ant" basedir="." >
+
+  <property file="build.properties"/>
+
+  <property name="build.dir" location="${basedir}/.build"/>
+  <property name="test.dir" location="${basedir}/test"/>
+  <property name="distr.dir" location="${build.dir}/distr"/>
+  <property name="report.dir" location="${build.dir}/report"/>
+
+  <property name="sender.classes.dir" value="${build.dir}/classes/sender"/>
+  <property name="sender.src.dir" value="${basedir}/src"/>
+
+  <tstamp>
+    <format property="build.date" pattern="yyyy-MM-dd HH:mm:ss" />
+  </tstamp>
+
+  <path id="sender.compile.classpath">
+    <fileset dir="lib" includes="*.jar"/>
+    <fileset dir="libdev" includes="*.jar"/>
+  </path>
+
+  <target name="clean" description="clean all">
+    <delete dir="${build.dir}"/>
+    <delete dir="${basedir}/lib"/>
+    <delete dir="${basedir}/libdev"/>
+  </target>
+
+  <target name="resolve" description="retrieve dependencies with ivy">
+    <ivy:settings file="${user.home}/.ivy2/ivysettings.xml"/>
+    <ivy:resolve transitive="false"/>
+    <ivy:retrieve type="jar,bundle" pattern="${basedir}/lib/[artifact]-[revision].[ext]" conf="sender-prod" haltonfailure="true"/>
+    <ivy:retrieve type="jar,bundle" pattern="${basedir}/libdev/[artifact]-[revision].[ext]" conf="sender-dev" haltonfailure="true"/>
+  </target>
+
+  <target name="javac" description="Компилирует код с помощью javac">
+    <delete dir="${classes.dir}" failonerror="false"/>
+    <mkdir dir="${classes.dir}"/>
+
+    <javac debug="on" srcdir="${src.dir}" destdir="${classes.dir}" classpathref="${classpathref}"/>
+
+    <copy todir="${classes.dir}">
+      <fileset dir="${src.dir}" excludes="**/*.java"/>
+    </copy>
+  </target>
+
+  <target name="compile">
+    <antcall target="javac">
+      <param name="src.dir" value="${sender.src.dir}"/>
+      <param name="classes.dir" value="${sender.classes.dir}"/>
+      <param name="classpathref" value="sender.compile.classpath"/>
+    </antcall>
+  </target>
+
+  <target name="distr" depends="compile">
+    <delete file="${distr.dir}/${module.name}.war" failonerror="false"/>
+    <mkdir dir="${distr.dir}"/>
+
+    <war destfile="${distr.dir}/${module.name}.war" webxml="${basedir}/web/WEB-INF/web.xml">
+      <manifest>
+        <attribute name="Release-Version" value="${release.version}"/>
+      </manifest>
+      <classes dir="${sender.classes.dir}"/>
+      <lib dir="lib"/>
+    </war>
+  </target>
+
+</project>
