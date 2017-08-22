@@ -1,11 +1,11 @@
 package com.eyelinecom.whoisd.sads2.sender.web.servlets;
 
-import com.eyelinecom.whoisd.sads2.sender.services.Service;
 import com.eyelinecom.whoisd.sads2.sender.services.messaging.FeedbackProvider;
 import com.eyelinecom.whoisd.sads2.sender.services.sender.SenderProvider;
 import org.apache.log4j.Logger;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,10 +19,11 @@ public class SenderServlet extends HttpServlet {
   private final static Logger logger = Logger.getLogger("SADS_SENDER");
 
   @Inject
-  @Service
+  @Named("feedback")
   private FeedbackProvider feedbackProvider;
 
   @Inject
+  @Named("sender")
   private SenderProvider senderProvider;
 
   @Override
@@ -39,11 +40,15 @@ public class SenderServlet extends HttpServlet {
     try {
       RequestParameters params = new RequestParameters(request);
 
-      if (params.hasSenderMessage()) {
-        feedbackProvider.sendAskForTextResponse(response);
-      } else {
+      if (params.isCanceled()) {
+        feedbackProvider.sendCanceled(response);
+      }
+      else if (params.hasSenderMessage()) {
         senderProvider.initMessageBroadcasting(params.getServiceId(), params.getSenderMessage());
         feedbackProvider.sendMessageWasSent(response);
+      }
+      else {
+        feedbackProvider.sendAskForTextResponse(response);
       }
 
     } catch(Exception ex) {

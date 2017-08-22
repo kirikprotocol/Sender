@@ -13,7 +13,7 @@ public class Services {
 
   public Services(XmlConfigSection config) throws ServicesException {
     this.senderProvider = initSenderProvider(config);
-    this.feedbackProvider = new FeedbackService();
+    this.feedbackProvider = initFeedbackProvider(config);
   }
 
   private static SenderProvider initSenderProvider(XmlConfigSection config) throws ServicesException {
@@ -27,6 +27,16 @@ public class Services {
     }
     catch (Exception e) {
       throw new ServicesException("Error during SenderProvider initialization.", e);
+    }
+  }
+
+  private static FeedbackProvider initFeedbackProvider(XmlConfigSection config) throws ServicesException {
+    try {
+      String deployUrl = config.getString("deploy.url");
+      return new FeedbackService(deployUrl);
+    }
+    catch (Exception e) {
+      throw new ServicesException("Error during FeedbackProvider initialization.", e);
     }
   }
 

@@ -55,12 +55,14 @@
     <delete file="${distr.dir}/${module.name}.war" failonerror="false"/>
     <mkdir dir="${distr.dir}"/>
 
-    <war destfile="${distr.dir}/${module.name}.war" webxml="${basedir}/web/WEB-INF/web.xml">
+    <war destfile="${distr.dir}/${module.name}.war" >
       <manifest>
         <attribute name="Release-Version" value="${release.version}"/>
+        <attribute name="Build-Date" value="${build.date}"/>
       </manifest>
       <classes dir="${sender.classes.dir}"/>
       <lib dir="lib"/>
+      <fileset dir="web"/>
     </war>
   </target>
 

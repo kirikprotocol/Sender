@@ -2,6 +2,7 @@
 
 <config>
   <section name="sender.plugin">
+    <param name="deploy.url" type="string">DEPLOY_URL/sads-sender</param>
     <param name="profile.storage.api.url" type="string">http:///wstorage/v2/profile</param>
     <param name="push.api.url" type="string">https://api.miniapps.run/push</param>
 

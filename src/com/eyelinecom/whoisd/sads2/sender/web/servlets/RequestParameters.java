@@ -12,10 +12,12 @@ public class RequestParameters {
   private final Locale locale;
   private final String userId;
   private final String senderMessage;
+  private final String canceled;
 
   RequestParameters(HttpServletRequest request) {
     userId = getUserId(request);
     senderMessage = request.getParameter("sender_message");
+    canceled = request.getParameter("canceled");
     locale = getLocale(request);
     serviceId = getRequiredParameter(request, "service");
   }
@@ -37,7 +39,15 @@ public class RequestParameters {
   }
 
   public boolean hasSenderMessage() {
-    return senderMessage == null || senderMessage.trim().isEmpty();
+    return senderMessage != null && !senderMessage.trim().isEmpty();
+  }
+
+  public String getCanceled() {
+    return canceled;
+  }
+
+  public boolean isCanceled() {
+    return canceled != null;
   }
 
   private static String getUserId(HttpServletRequest request) {
