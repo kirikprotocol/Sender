@@ -82,4 +82,15 @@ public class RequestParameters {
 
     return value;
   }
+
+  @Override
+  public String toString() {
+    return "RequestParameters{" +
+      "serviceId='" + serviceId + '\'' +
+      ", locale=" + locale +
+      ", userId='" + userId + '\'' +
+      ", senderMessage='" + senderMessage + '\'' +
+      ", canceled='" + canceled + '\'' +
+      '}';
+  }
 }

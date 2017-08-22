@@ -40,6 +40,9 @@ public class SenderServlet extends HttpServlet {
     try {
       RequestParameters params = new RequestParameters(request);
 
+      if (logger.isDebugEnabled())
+        logger.debug("Request: " + params);
+
       if (params.isCanceled()) {
         feedbackProvider.sendCanceled(response);
       }

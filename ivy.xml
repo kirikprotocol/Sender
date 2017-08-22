@@ -99,6 +99,9 @@
     <dependency org="com.fasterxml.jackson.jaxrs" name="jackson-jaxrs-base" rev="2.6.5" conf="sender-prod->default"/>
     <dependency org="com.fasterxml.jackson.module" name="jackson-module-jaxb-annotations" rev="2.6.5" conf="sender-prod->default"/>
 
+    <!--REST SOAP API-->
+    <dependency org="javax.ws.rs" name="javax.ws.rs-api" rev="2.0.1" conf="sender-prod->default"/>
+
   </dependencies>
 
 </ivy-module>
