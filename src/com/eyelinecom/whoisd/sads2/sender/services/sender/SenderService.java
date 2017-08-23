@@ -14,7 +14,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * author: Artem Voronov
@@ -40,35 +39,21 @@ public class SenderService implements SenderProvider {
   @SuppressWarnings("unchecked")
   @Override
   public void initMessageBroadcasting(String serviceId, String message) {
-//    Collection<String> userIds = get(profileStorageApiUrl+"?visited."+serviceId, Collection.class);
-//
-//    final String encodedMessagePage = encode(String.format(Templates.MESSAGE_PAGE, message));
-//    for (String userId : userIds) {
-//      Collection<Map<String, Object>> profilePropertyHistory = get(profileStorageApiUrl+"/"+userId+"/*"+serviceId+"*/history", Collection.class);
-//      for (Map<String, Object> profileProperty : profilePropertyHistory) {
-//        String path = profileProperty.get("path").toString();
-//        if (path != null && path.startsWith("visited")) {
-//          String protocol = profileProperty.get("value").toString();
-//          if (protocol != null) {
-//            String pushUrl = pushApiUrl+"?service=" + serviceId + "&user_id=" + userId + "&protocol"  "&scenario=xmlpush&document=" + encodedMessagePage;
-//          }
-//        }
-//
-//
-//
-//        if (logger.isDebugEnabled())
-//          logger.debug("loaded " + toPrettyMap(profileProperty));
-//      }
-//
-//
-//
-////      String pushUrl = pushApiUrl+"?service=" + serviceId + "&user_id=" + userId + "&scenario=xmlpush&document=" + encodedMessagePage;
-////      get(pushUrl, String.class);
-//    }
-  }
+    final String escapedServiceId = serviceId.replaceAll("\\.", "_");
+    Collection<String> userIds = get(profileStorageApiUrl+"?visited."+escapedServiceId, Collection.class);
 
-  public static String toPrettyMap(Map<String, Object> parameters) {
-    return parameters.entrySet().stream().map(stringEntry -> "" + stringEntry.getKey() + " == " +stringEntry.getValue()).collect(Collectors.joining("\n"));
+    final String encodedMessagePage = encode(String.format(Templates.MESSAGE_PAGE, message));
+    for (String userId : userIds) {
+      Map<String, Object> profileProperty = get(profileStorageApiUrl+"/"+userId+"/visited."+escapedServiceId, Map.class);
+      String path = profileProperty.get("path").toString();
+      if (path != null && path.startsWith("visited")) {
+        String protocol = profileProperty.get("value").toString();
+        if (protocol != null && !protocol.isEmpty()) {
+          String pushUrl = pushApiUrl+"?service=" + serviceId + "&user_id=" + userId + "&protocol=" + protocol + "&scenario=xmlpush&document=" + encodedMessagePage;
+          get(pushUrl, String.class);
+        }
+      }
+    }
   }
 
   private static String encode(String value) {

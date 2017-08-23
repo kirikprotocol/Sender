@@ -12,12 +12,10 @@ import java.io.PrintWriter;
 public class FeedbackService implements FeedbackProvider {
 
   private final String askForTextPage;
-  private final String messageWasSentPage;
   private final String canceledPage;
 
   public FeedbackService(String deployUrl) {
-    this.askForTextPage = String.format(Templates.ASK_FOR_TEXT_PAGE, deployUrl, deployUrl+"?canceled=true");
-    this.messageWasSentPage = String.format(Templates.MESSAGE_PAGE, "Message was sent!");
+    this.askForTextPage = String.format(Templates.ASK_FOR_TEXT_PAGE, deployUrl, deployUrl+"?canceled=true");//TODO: canceled должен вести на start page?
     this.canceledPage = String.format(Templates.MESSAGE_PAGE, "Canceled!");
   }
 
@@ -28,16 +26,6 @@ public class FeedbackService implements FeedbackProvider {
 
     try (PrintWriter out = response.getWriter()) {
       out.write(askForTextPage);
-    }
-  }
-
-  @Override
-  public void sendMessageWasSent(HttpServletResponse response) throws IOException {
-    response.setCharacterEncoding("UTF-8");
-    response.setStatus(HttpServletResponse.SC_OK);
-
-    try (PrintWriter out = response.getWriter()) {
-      out.write(messageWasSentPage);
     }
   }
 

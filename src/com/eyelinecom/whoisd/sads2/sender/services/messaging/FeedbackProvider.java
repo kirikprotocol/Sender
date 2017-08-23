@@ -9,6 +9,5 @@ import java.io.IOException;
 public interface FeedbackProvider {
 
   void sendAskForTextResponse(HttpServletResponse response) throws IOException;
-  void sendMessageWasSent(HttpServletResponse response) throws IOException;
   void sendCanceled(HttpServletResponse response) throws IOException;
 }

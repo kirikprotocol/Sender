@@ -48,7 +48,6 @@ public class SenderServlet extends HttpServlet {
       }
       else if (params.hasSenderMessage()) {
         senderProvider.initMessageBroadcasting(params.getServiceId(), params.getSenderMessage());
-        feedbackProvider.sendMessageWasSent(response);
       }
       else {
         feedbackProvider.sendAskForTextResponse(response);
