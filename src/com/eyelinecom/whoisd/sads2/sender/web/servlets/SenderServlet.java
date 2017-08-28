@@ -43,14 +43,11 @@ public class SenderServlet extends HttpServlet {
       if (logger.isDebugEnabled())
         logger.debug("Request: " + params);
 
-      if (params.isCanceled()) {
-        feedbackProvider.sendCanceled(response);
-      }
-      else if (params.hasSenderMessage()) {
+      if (params.hasSenderMessage()) {
         senderProvider.initMessageBroadcasting(params.getServiceId(), params.getSenderMessage());
       }
       else {
-        feedbackProvider.sendAskForTextResponse(response);
+        feedbackProvider.sendAskForTextResponse(response, params.getExitUrl());
       }
 
     } catch(Exception ex) {

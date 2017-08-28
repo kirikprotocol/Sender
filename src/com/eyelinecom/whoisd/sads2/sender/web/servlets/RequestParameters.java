@@ -12,12 +12,12 @@ public class RequestParameters {
   private final Locale locale;
   private final String userId;
   private final String senderMessage;
-  private final String canceled;
+  private final String exitUrl;
 
   RequestParameters(HttpServletRequest request) {
     userId = getUserId(request);
     senderMessage = request.getParameter("sender_message");
-    canceled = request.getParameter("canceled");
+    exitUrl = getRequiredParameter(request,"exit_url");
     locale = getLocale(request);
     serviceId = getRequiredParameter(request, "service");
   }
@@ -42,12 +42,8 @@ public class RequestParameters {
     return senderMessage != null && !senderMessage.trim().isEmpty();
   }
 
-  public String getCanceled() {
-    return canceled;
-  }
-
-  public boolean isCanceled() {
-    return canceled != null;
+  public String getExitUrl() {
+    return exitUrl;
   }
 
   private static String getUserId(HttpServletRequest request) {
@@ -90,7 +86,7 @@ public class RequestParameters {
       ", locale=" + locale +
       ", userId='" + userId + '\'' +
       ", senderMessage='" + senderMessage + '\'' +
-      ", canceled='" + canceled + '\'' +
+      ", exit_url='" + exitUrl + '\'' +
       '}';
   }
 }

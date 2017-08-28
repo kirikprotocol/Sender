@@ -11,31 +11,20 @@ import java.io.PrintWriter;
  */
 public class FeedbackService implements FeedbackProvider {
 
-  private final String askForTextPage;
-  private final String canceledPage;
+  private final String deployUrl;
 
   public FeedbackService(String deployUrl) {
-    this.askForTextPage = String.format(Templates.ASK_FOR_TEXT_PAGE, deployUrl, deployUrl+"?canceled=true");//TODO: canceled должен вести на start page?
-    this.canceledPage = String.format(Templates.MESSAGE_PAGE, "Canceled!");
+    this.deployUrl = deployUrl;
   }
 
   @Override
-  public void sendAskForTextResponse(HttpServletResponse response) throws IOException {
+  public void sendAskForTextResponse(HttpServletResponse response, String exitUrl) throws IOException {
     response.setCharacterEncoding("UTF-8");
     response.setStatus(HttpServletResponse.SC_OK);
 
+    final String askForTextPage = String.format(Templates.ASK_FOR_TEXT_PAGE, deployUrl, exitUrl);
     try (PrintWriter out = response.getWriter()) {
       out.write(askForTextPage);
-    }
-  }
-
-  @Override
-  public void sendCanceled(HttpServletResponse response) throws IOException {
-    response.setCharacterEncoding("UTF-8");
-    response.setStatus(HttpServletResponse.SC_OK);
-
-    try (PrintWriter out = response.getWriter()) {
-      out.write(canceledPage);
     }
   }
 }
