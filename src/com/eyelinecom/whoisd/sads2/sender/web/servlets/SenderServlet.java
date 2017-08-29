@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * author: Artem Voronov
@@ -44,7 +45,8 @@ public class SenderServlet extends HttpServlet {
         logger.debug("Request: " + params);
 
       if (params.hasSenderMessage()) {
-        senderProvider.initMessageBroadcasting(params.getServiceId(), params.getSenderMessage());
+        Map<String, Integer> frequency = senderProvider.initMessageBroadcasting(params.getServiceId(), params.getSenderMessage());
+        feedbackProvider.sendNotifyAllResult(response, frequency);
       }
       else {
         feedbackProvider.sendAskForTextResponse(response, params.getExitUrl());

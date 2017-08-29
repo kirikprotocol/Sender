@@ -1,5 +1,6 @@
 package com.eyelinecom.whoisd.sads2.sender.services.sender;
 
+import com.eyelinecom.whoisd.sads2.sender.utils.EncodingUtils;
 import com.eyelinecom.whoisd.sads2.sender.utils.Templates;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
@@ -9,11 +10,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 /**
  * author: Artem Voronov
@@ -25,6 +22,8 @@ public class SenderService implements SenderProvider {
   private final Client client;
   private final String profileStorageApiUrl;
   private final String pushApiUrl;
+
+  private final Set<String> forbiddenProtocols = new HashSet<>(Arrays.asList(new String[]{"xhtml_mp"}));
 
   public SenderService(String profileStorageApiUrl, String pushApiUrl, int connectTimeoutInMillis, int requestTimeoutInMillis) {
     ClientConfig config = new ClientConfig();
@@ -38,30 +37,30 @@ public class SenderService implements SenderProvider {
 
   @SuppressWarnings("unchecked")
   @Override
-  public void initMessageBroadcasting(String serviceId, String message) {
+  public Map<String, Integer> initMessageBroadcasting(String serviceId, String message) {
     final String escapedServiceId = serviceId.replaceAll("\\.", "_");
     Collection<String> userIds = get(profileStorageApiUrl+"?visited."+escapedServiceId, Collection.class);
 
-    final String encodedMessagePage = encode(String.format(Templates.MESSAGE_PAGE, message));
+    Map<String, Integer> frequency = new HashMap<>();
+
+    final String encodedMessagePage = EncodingUtils.encode(String.format(Templates.MESSAGE_PAGE, message));
     for (String userId : userIds) {
       Map<String, Object> profileProperty = get(profileStorageApiUrl+"/"+userId+"/visited."+escapedServiceId, Map.class);
       String path = profileProperty.get("path").toString();
       if (path != null && path.startsWith("visited")) {
         String protocol = profileProperty.get("value").toString();
-        if (protocol != null && !protocol.isEmpty()) {
+        if (protocol != null && !protocol.isEmpty() && !forbiddenProtocols.contains(protocol)) {
+
+          int count = frequency.containsKey(protocol) ? frequency.get(protocol) : 0;
+          frequency.put(protocol, count + 1);
+
           String pushUrl = pushApiUrl+"?service=" + serviceId + "&user_id=" + userId + "&protocol=" + protocol + "&scenario=xmlpush&document=" + encodedMessagePage;
           get(pushUrl, String.class);
         }
       }
     }
-  }
 
-  private static String encode(String value) {
-    try {
-      return URLEncoder.encode(value, StandardCharsets.UTF_8.name());
-    } catch (UnsupportedEncodingException e) {
-      throw new IllegalArgumentException("Value can not be encoded: " + value);
-    }
+    return frequency;
   }
 
   private <T> T get(String endpoint, Class<T> clazz) {
