@@ -1,6 +1,7 @@
 package com.eyelinecom.whoisd.sads2.sender.services;
 
 import com.eyeline.utils.config.xml.XmlConfigSection;
+import com.eyelinecom.whoisd.sads2.sender.services.i18n.MessageProvider;
 import com.eyelinecom.whoisd.sads2.sender.services.messaging.FeedbackProvider;
 import com.eyelinecom.whoisd.sads2.sender.services.messaging.FeedbackService;
 import com.eyelinecom.whoisd.sads2.sender.services.sender.SenderProvider;
@@ -10,10 +11,12 @@ public class Services {
 
   private final SenderProvider senderProvider;
   private final FeedbackProvider feedbackProvider;
+  private final MessageProvider messageProvider;
 
   public Services(XmlConfigSection config) throws ServicesException {
+    this.messageProvider = new MessageProvider();
     this.senderProvider = initSenderProvider(config);
-    this.feedbackProvider = initFeedbackProvider(config);
+    this.feedbackProvider = initFeedbackProvider(config, messageProvider);
   }
 
   private static SenderProvider initSenderProvider(XmlConfigSection config) throws ServicesException {
@@ -30,10 +33,10 @@ public class Services {
     }
   }
 
-  private static FeedbackProvider initFeedbackProvider(XmlConfigSection config) throws ServicesException {
+  private static FeedbackProvider initFeedbackProvider(XmlConfigSection config, MessageProvider messageProvider) throws ServicesException {
     try {
       String deployUrl = config.getString("deploy.url");
-      return new FeedbackService(deployUrl);
+      return new FeedbackService(deployUrl, messageProvider);
     }
     catch (Exception e) {
       throw new ServicesException("Error during FeedbackProvider initialization.", e);
@@ -46,5 +49,9 @@ public class Services {
 
   public FeedbackProvider getFeedbackProvider() {
     return feedbackProvider;
+  }
+
+  public MessageProvider getMessageProvider() {
+    return messageProvider;
   }
 }

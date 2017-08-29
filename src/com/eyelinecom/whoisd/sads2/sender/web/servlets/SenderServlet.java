@@ -46,10 +46,10 @@ public class SenderServlet extends HttpServlet {
 
       if (params.hasSenderMessage()) {
         Map<String, Integer> frequency = senderProvider.initMessageBroadcasting(params.getServiceId(), params.getSenderMessage());
-        feedbackProvider.sendNotifyAllResult(response, frequency);
+        feedbackProvider.sendNotifyAllResult(params.getLocale(), response, frequency);
       }
       else {
-        feedbackProvider.sendAskForTextResponse(response, params.getExitUrl());
+        feedbackProvider.sendAskForTextResponse(params.getLocale(), response, params.getExitUrl());
       }
 
     } catch(Exception ex) {
