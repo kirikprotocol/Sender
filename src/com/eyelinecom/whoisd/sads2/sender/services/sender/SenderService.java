@@ -34,19 +34,23 @@ public class SenderService implements SenderProvider {
 
     final String encodedMessagePage = EncodingUtils.encode(String.format(Templates.MESSAGE_PAGE, message));
     for (String profileId : profileIds) {
-      ProfileProperty profileProperty = profileApiProvider.getProfileProperty(profileId,"/visited."+escapedServiceId);
+      ProfileProperty profileProperty = profileApiProvider.getProfileProperty(profileId,"visited."+escapedServiceId);
+      if (profileProperty == null)
+        continue;
+
       String path = profileProperty.getPath();
-      if (path != null && path.startsWith("visited")) {
-        String protocol = profileProperty.getValue();
-        if (protocol != null && !protocol.isEmpty() && !forbiddenProtocols.contains(protocol)) {
+      if (path == null || !path.startsWith("visited"))
+        continue;
 
-          int count = frequency.containsKey(protocol) ? frequency.get(protocol) : 0;
-          frequency.put(protocol, count + 1);
+      String protocol = profileProperty.getValue();
+      if (protocol == null || protocol.isEmpty() || forbiddenProtocols.contains(protocol))
+        continue;
 
-          String pushUrl = pushApiUrl+"?service=" + serviceId + "&user_id=" + profileId + "&protocol=" + protocol + "&scenario=xmlpush&document=" + encodedMessagePage;
-          apiClient.get(pushUrl, String.class);
-        }
-      }
+      int count = frequency.containsKey(protocol) ? frequency.get(protocol) : 0;
+      frequency.put(protocol, count + 1);
+
+      String pushUrl = pushApiUrl+"?service=" + serviceId + "&user_id=" + profileId + "&protocol=" + protocol + "&scenario=xmlpush&document=" + encodedMessagePage;
+      apiClient.get(pushUrl, String.class);
     }
 
     return frequency;

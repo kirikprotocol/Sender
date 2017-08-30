@@ -94,7 +94,6 @@ public class RequestParameters {
     pluginParams.put("locale", locale.getLanguage());
     pluginParams.put("exit_url", exitUrl);
     pluginParams.put("sender_service_owner", senderServiceOwner);
-    pluginParams.put("sender_message", senderMessage);
 
     return pluginParams;
   }

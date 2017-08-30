@@ -18,7 +18,7 @@ public class ProfileApiService implements ProfileApiProvider {
     this.profileStorageApiUrl = profileStorageApiUrl;
   }
 
-  @Override
+    @Override
   @SuppressWarnings("unchecked")
   public Collection<String> getProfiles(String serviceId) {
     final String escapedServiceId = serviceId.replaceAll("\\.", "_");
@@ -28,8 +28,11 @@ public class ProfileApiService implements ProfileApiProvider {
   @Override
   @SuppressWarnings("unchecked")
   public ProfileProperty getProfileProperty(String profileId, String property) {
+    Map<String, Object> profileProperty = apiClient.get(profileStorageApiUrl+"/"+profileId+"/"+property, Map.class);
 
-    Map<String, Object> profileProperty = apiClient.get(profileStorageApiUrl+"?"+property, Map.class);
+    if (profileProperty.containsKey("error"))
+      return null;
+
     String value = profileProperty.get("value").toString();
     String path = profileProperty.get("path").toString();
 

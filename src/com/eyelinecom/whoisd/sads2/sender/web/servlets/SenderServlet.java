@@ -50,15 +50,19 @@ public class SenderServlet extends HttpServlet {
       if (logger.isDebugEnabled())
         logger.debug("Request: " + params);
 
-      ProfileProperty profileProperty = profileApiProvider.getProfileProperty(params.getUserId(),"/mobile.msisdn");
-      String msisdn = profileProperty.getValue();
+      ProfileProperty msisdnProperty = profileApiProvider.getProfileProperty(params.getUserId(),"mobile.msisdn");
+      if (msisdnProperty == null) {
+        feedbackProvider.sendToMsisdnVerification(response, params);
+        return;
+      }
 
+      String msisdn = msisdnProperty.getValue();
       if (msisdn == null || msisdn.isEmpty()) {
         feedbackProvider.sendToMsisdnVerification(response, params);
         return;
       }
 
-      if (!hasAccessRightsOfSender(params, msisdn)) {
+      if (isAccessDenied(params, msisdn)) {
         feedbackProvider.sendAccessDenied(params.getLocale(), response);
         return;
       }
@@ -78,14 +82,14 @@ public class SenderServlet extends HttpServlet {
   }
 
 
-  private boolean hasAccessRightsOfSender(RequestParameters params, String msisdn) {
+  private boolean isAccessDenied(RequestParameters params, String msisdn) {
     final String serviceOwner = params.getSenderServiceOwner();
 
     if (serviceOwner == null) {
       if (logger.isDebugEnabled())
         logger.debug("Missed \"sender-service-owner\" property!");
 
-      return false;
+      return true;
     }
 
     final String verifiedPhoneNumber = msisdn.replaceAll("\\+", "").replaceAll("-", "").replaceAll("\\s", "");
@@ -95,9 +99,9 @@ public class SenderServlet extends HttpServlet {
       if (logger.isDebugEnabled())
         logger.debug("VERIFIED_PHONE_NUMBER is not equal to SERVICE_OWNER!");
 
-      return false;
+      return true;
     }
 
-    return true;
+    return false;
   }
 }
