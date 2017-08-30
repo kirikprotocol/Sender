@@ -4,6 +4,7 @@ import com.eyeline.utils.config.xml.XmlConfigSection;
 import com.eyelinecom.whoisd.sads2.sender.services.Services;
 import com.eyelinecom.whoisd.sads2.sender.services.ServicesException;
 import com.eyelinecom.whoisd.sads2.sender.services.messaging.FeedbackProvider;
+import com.eyelinecom.whoisd.sads2.sender.services.profile.ProfileApiProvider;
 import com.eyelinecom.whoisd.sads2.sender.services.sender.SenderProvider;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -34,5 +35,11 @@ public class WebContext {
   @Named("sender")
   public SenderProvider getSenderProvider() {
     return services.getSenderProvider();
+  }
+
+  @Produces
+  @Named("profile")
+  public ProfileApiProvider getProfileApiProvider() {
+    return services.getProfileApiProvider();
   }
 }

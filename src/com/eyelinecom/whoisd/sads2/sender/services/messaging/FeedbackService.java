@@ -3,6 +3,8 @@ package com.eyelinecom.whoisd.sads2.sender.services.messaging;
 import com.eyelinecom.whoisd.sads2.sender.services.i18n.MessageProvider;
 import com.eyelinecom.whoisd.sads2.sender.utils.EncodingUtils;
 import com.eyelinecom.whoisd.sads2.sender.utils.Templates;
+import com.eyelinecom.whoisd.sads2.sender.web.servlets.RequestParameters;
+import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -16,6 +18,8 @@ import java.util.stream.Collectors;
  */
 public class FeedbackService implements FeedbackProvider {
 
+  private final static Logger logger = Logger.getLogger("SADS_SENDER");
+
   private final String deployUrl;
   private final MessageProvider messageProvider;
 
@@ -25,10 +29,10 @@ public class FeedbackService implements FeedbackProvider {
   }
 
   @Override
-  public void sendAskForTextResponse(Locale locale, HttpServletResponse response, String exitUrl) throws IOException {
+  public void sendAskForTextResponse(Locale locale, HttpServletResponse response, String exitUrl, String senderOwner) throws IOException {
     String lang = locale.getLanguage();
     final String xml = String.format(Templates.ASK_FOR_TEXT_PAGE,
-      messageProvider.getString(lang, "enter.message"), deployUrl + "?exit_url=" + EncodingUtils.encode(exitUrl),
+      messageProvider.getString(lang, "enter.message"), deployUrl + "?exit_url=" + EncodingUtils.encode(exitUrl) + "&amp;sender_service_owner=" + EncodingUtils.encode(senderOwner),
       exitUrl, messageProvider.getString(lang, "cancel"));
 
     response.setCharacterEncoding("UTF-8");
@@ -52,5 +56,32 @@ public class FeedbackService implements FeedbackProvider {
     try (PrintWriter out = response.getWriter()) {
       out.write(xml);
     }
+  }
+
+  @Override
+  public void sendAccessDenied(Locale locale, HttpServletResponse response) throws IOException {
+    String lang = locale.getLanguage();
+    String xml = String.format(Templates.MESSAGE_PAGE, messageProvider.getString(lang, "access.denied") );
+
+    response.setCharacterEncoding("UTF-8");
+    response.setStatus(HttpServletResponse.SC_OK);
+    try (PrintWriter out = response.getWriter()) {
+      out.write(xml);
+    }
+  }
+
+  @Override
+  public void sendToMsisdnVerification(HttpServletResponse response, RequestParameters params) throws IOException {
+    final String successUrl = deployUrl + "?"+paramsToString(params.getPluginParams());
+    final String redirectUri = "http://plugins.miniapps.run/msisdn-verification?type=c2s&success_url="+successUrl;
+
+    if (logger.isDebugEnabled())
+      logger.debug("Redirecting to: " + redirectUri);
+
+    response.sendRedirect(redirectUri);
+  }
+
+    private static String paramsToString(Map<String, String> parameters) {
+    return parameters.entrySet().stream().map(stringEntry -> "" + stringEntry.getKey() + "%3D"+stringEntry.getValue()).collect(Collectors.joining("%26"));
   }
 }

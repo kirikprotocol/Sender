@@ -1,7 +1,9 @@
 package com.eyelinecom.whoisd.sads2.sender.web.servlets;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * author: Artem Voronov
@@ -85,6 +87,18 @@ public class RequestParameters {
     return value;
   }
 
+  public Map<String, String> getPluginParams() {
+    Map<String, String> pluginParams = new HashMap<>();
+
+    pluginParams.put("service", serviceId);
+    pluginParams.put("locale", locale.getLanguage());
+    pluginParams.put("exit_url", exitUrl);
+    pluginParams.put("sender_service_owner", senderServiceOwner);
+    pluginParams.put("sender_message", senderMessage);
+
+    return pluginParams;
+  }
+
   @Override
   public String toString() {
     return "RequestParameters{" +
@@ -92,7 +106,8 @@ public class RequestParameters {
       ", locale=" + locale +
       ", userId='" + userId + '\'' +
       ", senderMessage='" + senderMessage + '\'' +
-      ", exit_url='" + exitUrl + '\'' +
+      ", senderServiceOwner='" + senderServiceOwner + '\'' +
+      ", exitUrl='" + exitUrl + '\'' +
       '}';
   }
 }
