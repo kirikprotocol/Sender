@@ -12,12 +12,14 @@ public class RequestParameters {
   private final Locale locale;
   private final String userId;
   private final String senderMessage;
+  private final String senderServiceOwner;
   private final String exitUrl;
 
   RequestParameters(HttpServletRequest request) {
     userId = getUserId(request);
     senderMessage = request.getParameter("sender_message");
     exitUrl = getRequiredParameter(request,"exit_url");
+    senderServiceOwner = getRequiredParameter(request,"sender_service_owner");
     locale = getLocale(request);
     serviceId = getRequiredParameter(request, "service");
   }
@@ -44,6 +46,10 @@ public class RequestParameters {
 
   public String getExitUrl() {
     return exitUrl;
+  }
+
+  public String getSenderServiceOwner() {
+    return senderServiceOwner;
   }
 
   private static String getUserId(HttpServletRequest request) {

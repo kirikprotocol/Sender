@@ -44,6 +44,8 @@ public class SenderServlet extends HttpServlet {
       if (logger.isDebugEnabled())
         logger.debug("Request: " + params);
 
+      //TODO: add phone validation
+
       if (params.hasSenderMessage()) {
         Map<String, Integer> frequency = senderProvider.initMessageBroadcasting(params.getServiceId(), params.getSenderMessage());
         feedbackProvider.sendNotifyAllResult(params.getLocale(), response, frequency);
