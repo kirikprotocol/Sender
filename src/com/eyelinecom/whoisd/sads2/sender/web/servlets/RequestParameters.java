@@ -16,6 +16,7 @@ public class RequestParameters {
   private final String senderMessage;
   private final String senderServiceOwner;
   private final String exitUrl;
+  private final MessageType messageType;
 
   RequestParameters(HttpServletRequest request) {
     userId = getUserId(request);
@@ -24,6 +25,7 @@ public class RequestParameters {
     senderServiceOwner = getRequiredParameter(request,"sender_service_owner");
     locale = getLocale(request);
     serviceId = getRequiredParameter(request, "service");
+    messageType = getMessageType(request);
   }
 
   public String getServiceId() {
@@ -54,6 +56,10 @@ public class RequestParameters {
     return senderServiceOwner;
   }
 
+  public MessageType getMessageType() {
+    return messageType;
+  }
+
   private static String getUserId(HttpServletRequest request) {
     String userId = request.getParameter("user_id");
 
@@ -64,6 +70,12 @@ public class RequestParameters {
     }
 
     return userId;
+  }
+
+  private static MessageType getMessageType(HttpServletRequest request) {
+    final String eventType = request.getParameter("event.type");
+
+    return "text".equals(eventType) ? MessageType.TEXT : null;
   }
 
   private static Locale getLocale(HttpServletRequest request) {
@@ -107,6 +119,7 @@ public class RequestParameters {
       ", senderMessage='" + senderMessage + '\'' +
       ", senderServiceOwner='" + senderServiceOwner + '\'' +
       ", exitUrl='" + exitUrl + '\'' +
+      ", messageType='" + messageType + '\'' +
       '}';
   }
 }

@@ -68,6 +68,12 @@ public class SenderServlet extends HttpServlet {
       }
 
       if (params.hasSenderMessage()) {
+
+        if (params.getMessageType() == null) {//only text messages are supported
+          feedbackProvider.sendOnlyTextMessagesAreSupported(params.getLocale(), response);
+          return;
+        }
+
         Map<String, Integer> frequency = senderProvider.initMessageBroadcasting(params.getServiceId(), params.getSenderMessage());
         feedbackProvider.sendNotifyAllResult(params.getLocale(), response, frequency);
       }

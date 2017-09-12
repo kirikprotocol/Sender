@@ -71,6 +71,18 @@ public class FeedbackService implements FeedbackProvider {
   }
 
   @Override
+  public void sendOnlyTextMessagesAreSupported(Locale locale, HttpServletResponse response) throws IOException {
+    String lang = locale.getLanguage();
+    String xml = String.format(Templates.MESSAGE_PAGE, messageProvider.getString(lang, "only.text.messages.are.supported") );
+
+    response.setCharacterEncoding("UTF-8");
+    response.setStatus(HttpServletResponse.SC_OK);
+    try (PrintWriter out = response.getWriter()) {
+      out.write(xml);
+    }
+  }
+
+  @Override
   public void sendToMsisdnVerification(HttpServletResponse response, RequestParameters params) throws IOException {
     final String successUrl = deployUrl + "?"+paramsToString(params.getPluginParams());
     final String redirectUri = "http://plugins.miniapps.run/msisdn-verification?type=c2s&success_url="+successUrl;

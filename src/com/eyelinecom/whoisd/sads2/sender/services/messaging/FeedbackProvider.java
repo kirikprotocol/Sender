@@ -16,4 +16,5 @@ public interface FeedbackProvider {
   void sendNotifyAllResult(Locale locale, HttpServletResponse response, Map<String, Integer> frequency) throws IOException;
   void sendAccessDenied(Locale locale, HttpServletResponse response) throws IOException;
   void sendToMsisdnVerification(HttpServletResponse response, RequestParameters parameters) throws IOException;
+  void sendOnlyTextMessagesAreSupported(Locale locale, HttpServletResponse response) throws IOException;
 }
