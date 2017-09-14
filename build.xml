@@ -51,7 +51,7 @@
     </antcall>
   </target>
 
-  <target name="distr" depends="compile">
+  <target name="distr" depends="resolve, compile">
     <delete file="${distr.dir}/${module.name}.war" failonerror="false"/>
     <mkdir dir="${distr.dir}"/>
 
