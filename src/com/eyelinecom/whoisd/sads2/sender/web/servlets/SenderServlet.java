@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -50,6 +51,13 @@ public class SenderServlet extends HttpServlet {
       if (logger.isDebugEnabled())
         logger.debug("Request: " + params);
 
+      final String senderServiceOwner = params.getSenderServiceOwner();
+      final Locale locale = params.getLocale();
+      if (senderServiceOwner == null || senderServiceOwner.isEmpty()) {
+        feedbackProvider.sendPleaseAddServiceOwner(locale, response);
+        return;
+      }
+
       ProfileProperty msisdnProperty = profileApiProvider.getProfileProperty(params.getUserId(),"mobile.msisdn");
       if (msisdnProperty == null) {
         feedbackProvider.sendToMsisdnVerification(response, params);
@@ -63,22 +71,22 @@ public class SenderServlet extends HttpServlet {
       }
 
       if (isAccessDenied(params, msisdn)) {
-        feedbackProvider.sendAccessDenied(params.getLocale(), response);
+        feedbackProvider.sendAccessDenied(locale, response);
         return;
       }
 
       if (params.hasSenderMessage()) {
 
         if (params.getMessageType() == null) {//only text messages are supported
-          feedbackProvider.sendOnlyTextMessagesAreSupported(params.getLocale(), response);
+          feedbackProvider.sendOnlyTextMessagesAreSupported(locale, response);
           return;
         }
 
         Map<String, Integer> frequency = senderProvider.initMessageBroadcasting(params.getServiceId(), params.getSenderMessage());
-        feedbackProvider.sendNotifyAllResult(params.getLocale(), response, frequency);
+        feedbackProvider.sendNotifyAllResult(locale, response, frequency);
       }
       else {
-        feedbackProvider.sendAskForTextResponse(params.getLocale(), response, params.getExitUrl(), params.getSenderServiceOwner());
+        feedbackProvider.sendAskForTextResponse(locale, response, params.getExitUrl(), senderServiceOwner);
       }
 
     } catch(Exception ex) {

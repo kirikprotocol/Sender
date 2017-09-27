@@ -22,7 +22,7 @@ public class RequestParameters {
     userId = getUserId(request);
     senderMessage = request.getParameter("sender_message");
     exitUrl = getRequiredParameter(request,"exit_url");
-    senderServiceOwner = getRequiredParameter(request,"sender_service_owner");
+    senderServiceOwner = request.getParameter("sender_service_owner");
     locale = getLocale(request);
     serviceId = getRequiredParameter(request, "service");
     messageType = getMessageType(request);

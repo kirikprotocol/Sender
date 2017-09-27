@@ -71,6 +71,18 @@ public class FeedbackService implements FeedbackProvider {
   }
 
   @Override
+  public void sendPleaseAddServiceOwner(Locale locale, HttpServletResponse response) throws IOException {
+    String lang = locale.getLanguage();
+    String xml = String.format(Templates.MESSAGE_PAGE, messageProvider.getString(lang, "please.add.service.owner") );
+
+    response.setCharacterEncoding("UTF-8");
+    response.setStatus(HttpServletResponse.SC_OK);
+    try (PrintWriter out = response.getWriter()) {
+      out.write(xml);
+    }
+  }
+
+  @Override
   public void sendOnlyTextMessagesAreSupported(Locale locale, HttpServletResponse response) throws IOException {
     String lang = locale.getLanguage();
     String xml = String.format(Templates.MESSAGE_PAGE, messageProvider.getString(lang, "only.text.messages.are.supported") );
