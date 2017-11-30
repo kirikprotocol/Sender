@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 public class EncodingUtils {
   public static String encode(String value) {
     try {
-      return URLEncoder.encode(value, StandardCharsets.UTF_8.name());
+      return URLEncoder.encode(value.replaceAll("%", "&#37;").replaceAll("\\+", "&#43;"), StandardCharsets.UTF_8.name());
     } catch (UnsupportedEncodingException e) {
       throw new IllegalArgumentException("Value can not be encoded: " + value);
     }
